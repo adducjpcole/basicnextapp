@@ -2,26 +2,25 @@ import { Pool, PoolClient, QueryResultRow, QueryResult } from 'pg';
 
 const globalForPool = global as unknown as { pool: Pool };
 
-export const pool = globalForPool.pool || new Pool({
-  connectionString: process.env.DATABASE_URL,
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+export const pool =
+  globalForPool.pool ||
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+    max: 5,
+  });
 
-if (process.env.NODE_ENV !== 'production') globalForPool.pool = pool;
+if (process.env.NODE_ENV !== 'production')
+  globalForPool.pool = pool;
 
 // ----------------------------
 // Reusable query function
 // Using 'unknown' or a generic T instead of 'any'
 // ----------------------------
 export const query = <T extends QueryResultRow = QueryResultRow>(
-  text: string, 
+  text: string,
   params?: unknown[]
 ): Promise<QueryResult<T>> => pool.query<T>(text, params);
 
@@ -34,8 +33,8 @@ export const getClient = async () => {
     client,
     release: () => client.release(),
     query: <T extends QueryResultRow = QueryResultRow>(
-        text: string, 
-        params?: unknown[]
+      text: string,
+      params?: unknown[]
     ) => client.query<T>(text, params),
   };
 };
