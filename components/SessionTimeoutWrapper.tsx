@@ -69,7 +69,7 @@ export default function SessionTimeoutWrapper({
     <>
       {children}
       {showCountdown && (
-        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40">
+        <div className="fixed inset-0 flex items-center justify-center z-9999 bg-black/40">
           <div className="bg-white p-6 rounded-xl shadow-lg text-center w-96">
             <p className="mb-4 text-xl font-medium">
               You have been inactive. Logging out in{"  "}
