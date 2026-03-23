@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
-import { getUserRoles } from "./actions";
+import { getUserRoles } from "@/lib/actions";
 
 interface ButtonGuardWrapperProps {
   children: React.ReactNode;

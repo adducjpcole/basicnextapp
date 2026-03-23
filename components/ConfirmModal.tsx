@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useCallback } from "react";
-import { createRoot, Root } from "react-dom/client";
+import { useEffect, useRef, useCallback } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 
 type ModalProps = {
   message: string;
@@ -15,10 +15,10 @@ type ModalProps = {
 function ConfirmModalComponent({
   message,
   resolve,
-  okText = "OK",
-  cancelText = "Cancel",
-  okColor = "bg-blue-600 hover:bg-blue-700",
-  cancelColor = "bg-gray-400 hover:bg-gray-500",
+  okText = 'OK',
+  cancelText = 'Cancel',
+  okColor = 'bg-blue-600 hover:bg-blue-700',
+  cancelColor = 'bg-gray-400 hover:bg-gray-500',
 }: ModalProps) {
   const okButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -27,28 +27,28 @@ function ConfirmModalComponent({
 
   // Focus OK button and prevent body scroll
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     okButtonRef.current?.focus();
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     };
   }, []);
 
   // Keyboard shortcuts: Enter = OK, ESC = Cancel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (e.key === 'Enter') {
         handleOk();
-      } else if (e.key === "Escape") {
+      } else if (e.key === 'Escape') {
         handleCancel();
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleOk, handleCancel]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 flex items-center justify-center z-9999">
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/50"></div>
       {/* Modal content */}
@@ -76,10 +76,10 @@ function ConfirmModalComponent({
 
 export default function ConfirmModal(
   message: string,
-  options?: Partial<ModalProps>
+  options?: Partial<ModalProps>,
 ): Promise<boolean> {
   return new Promise((resolve) => {
-    const div = document.createElement("div");
+    const div = document.createElement('div');
     document.body.appendChild(div);
 
     const root: Root = createRoot(div);
@@ -97,7 +97,7 @@ export default function ConfirmModal(
           cleanup();
         }}
         {...options}
-      />
+      />,
     );
   });
 }

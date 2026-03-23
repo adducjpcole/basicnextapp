@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
-import { getUserRoles } from "./actions";
+import { getUserRoles } from '@/lib/actions';
 import { showMessage } from "@/components/MessageModal";
 
 interface PageGuardWrapperProps {
