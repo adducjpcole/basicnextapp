@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react';
 import Modal from '@/components/Modal';
 import { Field, TextAreaField, FormActions } from '@/components/FormFields';
 import { createUom, updateUom, deleteUom } from '@/lib/actions';
+import { downloadUomExcel } from './DownloadUomExcel';
+import DownloadUomPdf from './DownloadUomPdf';
 
 interface Uom {
   id: number;
@@ -50,12 +52,22 @@ export default function UomClient({ uoms }: { uoms: Uom[] }) {
             Units of Measure
           </h1>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
-        >
-          + Add Unit
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => downloadUomExcel(uoms)}
+            className="text-xs font-semibold uppercase tracking-widest bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2 transition-all"
+            title="Download Excel"
+          >
+            Download Excel
+          </button>
+          <DownloadUomPdf uoms={uoms} />
+          <button
+            onClick={() => setShowCreate(true)}
+            className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
+          >
+            + Add Unit
+          </button>
+        </div>
       </div>
 
       {/* Table */}

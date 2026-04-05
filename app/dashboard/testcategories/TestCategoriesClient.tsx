@@ -8,6 +8,8 @@ import {
   updateTestCategory,
   deleteTestCategory,
 } from '@/lib/actions';
+import { downloadTestCategoriesExcel } from './DownloadTestCategoriesExcel';
+import DownloadTestCategoriesPdf from './DownloadTestCategoriesPdf';
 
 interface TestCategory {
   id: number;
@@ -55,12 +57,22 @@ export default function TestCategoriesClient({
             Test Categories
           </h1>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
-        >
-          + Add Category
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => downloadTestCategoriesExcel(categories)}
+            className="text-xs font-semibold uppercase tracking-widest bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2 transition-all"
+            title="Download Excel"
+          >
+            Download Excel
+          </button>
+          <DownloadTestCategoriesPdf categories={categories} />
+          <button
+            onClick={() => setShowCreate(true)}
+            className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
+          >
+            + Add Category
+          </button>
+        </div>
       </div>
 
       <div className="bg-white border border-neutral-200">

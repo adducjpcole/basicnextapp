@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import Modal from "@/components/Modal";
 import { Field, TextAreaField, SelectField, FormActions } from "@/components/FormFields";
 import { createMedicalTest, updateMedicalTest, deleteMedicalTest } from "@/lib/actions";
+import { downloadMedicalTestsExcel } from "./DownloadMedicalTestsExcel";
+import DownloadMedicalTestsPdf from "./DownloadMedicalTestsPdf";
 
 interface MedicalTest {
   id: number;
@@ -72,12 +74,22 @@ export default function MedicalTestsClient({
           <p className="text-xs font-semibold uppercase tracking-widest text-blue-500 mb-2">Module 03</p>
           <h1 className="text-2xl font-semibold text-neutral-800">Medical Tests</h1>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
-        >
-          + Add Test
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => downloadMedicalTestsExcel(tests)}
+            className="text-xs font-semibold uppercase tracking-widest bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2 transition-all"
+            title="Download Excel"
+          >
+            Download Excel
+          </button>
+          <DownloadMedicalTestsPdf tests={tests} />
+          <button
+            onClick={() => setShowCreate(true)}
+            className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
+          >
+            + Add Test
+          </button>
+        </div>
       </div>
 
       <div className="bg-white border border-neutral-200">
