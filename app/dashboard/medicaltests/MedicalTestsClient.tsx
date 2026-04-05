@@ -22,6 +22,14 @@ interface MedicalTest {
 interface Uom { id: number; name: string; }
 interface TestCategory { id: number; name: string; }
 
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div className="mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+      {message}
+    </div>
+  );
+}
+
 export default function MedicalTestsClient({
   tests, uoms, categories,
 }: {
@@ -32,19 +40,39 @@ export default function MedicalTestsClient({
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<MedicalTest | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const uomOptions = uoms.map((u) => ({ value: u.id, label: u.name }));
   const categoryOptions = categories.map((c) => ({ value: c.id, label: c.name }));
 
+  function openCreate() { setFormError(null); setShowCreate(true); }
+  function openEdit(test: MedicalTest) { setFormError(null); setEditing(test); }
+  function openDelete(id: number) { setDeleteError(null); setDeletingId(id); }
+
   function handleCreate(formData: FormData) {
-    startTransition(async () => { await createMedicalTest(formData); setShowCreate(false); });
+    startTransition(async () => {
+      const result = await createMedicalTest(formData);
+      if (result?.error) { setFormError(result.error); return; }
+      setShowCreate(false);
+    });
   }
+
   function handleUpdate(formData: FormData) {
-    startTransition(async () => { await updateMedicalTest(formData); setEditing(null); });
+    startTransition(async () => {
+      const result = await updateMedicalTest(formData);
+      if (result?.error) { setFormError(result.error); return; }
+      setEditing(null);
+    });
   }
+
   function handleDelete(id: number) {
-    startTransition(async () => { await deleteMedicalTest(id); setDeletingId(null); });
+    startTransition(async () => {
+      const result = await deleteMedicalTest(id);
+      if (result?.error) { setDeleteError(result.error); return; }
+      setDeletingId(null);
+    });
   }
 
   const TestForm = ({ test, action, onClose, submitLabel }: {
@@ -78,13 +106,12 @@ export default function MedicalTestsClient({
           <button
             onClick={() => downloadMedicalTestsExcel(tests)}
             className="text-xs font-semibold uppercase tracking-widest bg-green-600 hover:bg-green-700 active:scale-95 text-white px-4 py-2 transition-all"
-            title="Download Excel"
           >
             Download Excel
           </button>
           <DownloadMedicalTestsPdf tests={tests} />
           <button
-            onClick={() => setShowCreate(true)}
+            onClick={openCreate}
             className="text-xs font-semibold uppercase tracking-widest bg-blue-500 hover:bg-blue-600 active:scale-95 text-white px-4 py-2 transition-all"
           >
             + Add Test
@@ -125,8 +152,8 @@ export default function MedicalTestsClient({
                   <td className="px-6 py-4 text-right font-mono text-xs text-neutral-500">{test.normalmax ?? "—"}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => setEditing(test)} className="text-xs font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-700 transition-colors">Edit</button>
-                      <button onClick={() => setDeletingId(test.id)} className="text-xs font-semibold uppercase tracking-widest text-neutral-300 hover:text-blue-500 transition-colors">Delete</button>
+                      <button onClick={() => openEdit(test)} className="text-xs font-semibold uppercase tracking-widest text-neutral-400 hover:text-neutral-700 transition-colors">Edit</button>
+                      <button onClick={() => openDelete(test.id)} className="text-xs font-semibold uppercase tracking-widest text-neutral-300 hover:text-blue-500 transition-colors">Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -141,18 +168,21 @@ export default function MedicalTestsClient({
 
       {showCreate && (
         <Modal title="Add Medical Test" onClose={() => setShowCreate(false)}>
+          {formError && <ErrorBanner message={formError} />}
           <TestForm action={handleCreate} onClose={() => setShowCreate(false)} submitLabel="Save" />
         </Modal>
       )}
 
       {editing && (
         <Modal title="Edit Medical Test" onClose={() => setEditing(null)}>
+          {formError && <ErrorBanner message={formError} />}
           <TestForm test={editing} action={handleUpdate} onClose={() => setEditing(null)} submitLabel="Update" />
         </Modal>
       )}
 
       {deletingId !== null && (
         <Modal title="Confirm Delete" onClose={() => setDeletingId(null)}>
+          {deleteError && <ErrorBanner message={deleteError} />}
           <p className="text-sm text-neutral-500 mb-6 leading-relaxed">
             This medical test will be permanently removed. This action cannot be undone.
           </p>
